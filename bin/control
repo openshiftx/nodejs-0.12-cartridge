@@ -1,0 +1,92 @@
+#!/bin/bash -e
+
+#imports
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+#vars
+declare action=$1
+
+#functions
+function running() {
+  ps -ef | grep ' node ' | grep -v grep
+}
+
+function start() {
+  local SLEEP='10s'
+  local MAX_ATTEMPTS=6
+  local -i i=0
+
+  #(1) start
+  if ! running; then
+    export NODE_PATH=$OPENSHIFT_NODEJS_NODE_PATH
+    [[ $PATH =~ $OPENSHIFT_NODEJS_BIN_DIR ]] || export PATH="$OPENSHIFT_NODEJS_BIN_DIR:$PATH"
+
+    pushd $OPENSHIFT_REPO_DIR
+    $OPENSHIFT_NODEJS_BIN_DIR/npm start -d &
+    popd
+
+    while ! running && [ $i -lt $MAX_ATTEMPTS ]; do
+      sleep $SLEEP
+      i=$((i+1))
+    done
+  fi
+
+  #(2) check
+  if running; then
+    client_result 'Node.js started.'
+  else
+    client_error 'Node.js couldn''t be started.'
+    exit 1
+  fi
+}
+
+function stop() {
+  local SLEEP='10s'
+  local MAX_ATTEMPTS=6
+  local -i i=0
+
+  #(1) stop
+  if running; then
+    kill `ps -ef | grep ' node ' | grep -v grep | awk '{print $2}'`
+
+    while running && [ $i -lt $MAX_ATTEMPTS ]; do
+      sleep $SLEEP
+      i=$((i+1))
+    done
+  fi
+
+  #(2) check
+  if running; then
+    client_error 'Node.js couldn''t be stopped.'
+    exit 1
+  else
+    client_result 'Node.js stopped.'
+    exit 0
+  fi
+}
+
+function restart() {
+  stop
+  start
+}
+
+function status() {
+  if running; then
+    client_result 'Node.js is running.'
+  else
+    client_result 'Node.js is stopped.'
+  fi
+}
+
+function tidy() {
+  rm $OPENSHIFT_NODEJS_LOG_DIR/nodejs.log.*
+}
+
+#main
+case $action in
+  start) start;;
+  stop) stop;;
+  restart) restart;;
+  status) status;;
+  tidy) tidy;;
+esac

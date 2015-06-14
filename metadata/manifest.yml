@@ -1,0 +1,71 @@
+---
+Name: nodejs
+Display-Name: Node.js 0.12
+Cartridge-Short-Name: NODEJS
+Cartridge-Vendor: openshiftx
+Vendor: nodejs.org
+Website: http://www.nodejs.org
+Description: Node.js 0.12 cartridge.
+Cartridge-Version: 0.1.0
+License: MIT
+License-Url: https://raw.githubusercontent.com/joyent/node/master/LICENSE
+Version: '0.12.4'
+Categories:
+  - service
+  - javascript
+  - nodejs
+  - web_framework
+Provides:
+  - nodejs
+  - nodejs-0.12
+Scaling:
+  Min: 1
+  Max: -1
+Endpoints:
+  - Private-IP-Name: IP
+    Private-Port-Name: PORT
+    Private-Port: 8080
+    Public-Port-Name: PROXY_PORT
+    Protocols:
+      - http
+      - ws
+    Options:
+      primary: true
+    Mappings:
+      - Frontend: ''
+        Backend: ''
+        Options:
+          websocket: true
+      - Frontend: /health
+        Backend: ''
+        Options:
+          health: true
+Install-Build-Required: false
+Cart-Data:
+  - Key: OPENSHIFT_NODEJS_HOME_DIR
+    Type: environment
+    Description: "Node.js home directory."
+  - Key: OPENSHIFT_NODEJS_DIR
+    Type: environment
+    Description: "Node.js home directory."
+  - Key: OPENSHIFT_NODEJS_NODE_PATH
+    Type: environment
+    Description: "Node.js node_modules directory."
+  - Key: OPENSHIFT_NODEJS_MODULES_DIR
+    Type: environment
+    Description: "Node.js node_modules directory."
+  - Key: OPENSHIFT_NODEJS_BIN_DIR
+    Type: environment
+    Description: "Node.js binary directory."
+  - Key: OPENSHIFT_NODEJS_LOG_DIR
+    Type: environment
+    Description: "Node.js log directory."
+  - Key: OPENSHIFT_NODEJS_IP
+    Type: environment
+    Description: "Node.js application IP."
+  - Key: OPENSHIFT_NODEJS_HOST
+    Type: environment
+    Description: "Node.js application IP."
+  - Key: OPENSHIFT_NODEJS_PORT
+    Type: environment
+    Description: "Node.js application port."

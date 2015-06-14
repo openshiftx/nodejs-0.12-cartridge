@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+#imports
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+#var
+declare version=$2
+
+#main
+#(1) prepare
+client_debug "Preparing environment to install..."
+mkdir -p $OPENSHIFT_NODEJS_HOME_DIR
+mkdir -p $OPENSHIFT_NODEJS_LOG_DIR
+mkdir -p $OPENSHIFT_NODEJS_MODULES_DIR
+mkdir -p $OPENSHIFT_NODEJS_BIN_DIR
+
+#(2) install
+client_debug "Installing Node.js on ${OPENSHIFT_NODEJS_HOME_DIR}..."
+cd $OPENSHIFT_NODEJS_HOME_DIR/versions
+tar -zxvf node-v${version}-linux-x64.tar.gz
+rm node-v${version}-linux-x64.tar.gz
+mv node-v${version}-linux-x64/* ../software
+
+#(3) end
+client_result "Node.js $version installed."

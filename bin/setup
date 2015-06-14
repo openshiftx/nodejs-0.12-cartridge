@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+#imports
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+#vars
+readonly version=$2
+readonly url="http://nodejs.org/dist/v${version}/node-v${version}-linux-x64.tar.gz"
+
+#main
+#(1) download
+client_debug "Downloading Node.js from ${url}..."
+mkdir -p $OPENSHIFT_NODEJS_HOME_DIR/versions
+curl -L $url -o $OPENSHIFT_NODEJS_HOME_DIR/versions/node-v${version}-linux-x64.tar.gz
